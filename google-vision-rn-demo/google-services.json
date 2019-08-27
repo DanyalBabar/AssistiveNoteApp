@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "512987191628",
+    "firebase_url": "https://era-gvision.firebaseio.com",
+    "project_id": "era-gvision",
+    "storage_bucket": "era-gvision.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512987191628:android:6a5c009c701351c3",
+        "android_client_info": {
+          "package_name": "com.danyalbabar.assistivenote"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "512987191628-7308e3m9d595of8gg44mdhoabu6sn5tm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3YNtv_rr7JWaMdRemg-5wBa8yQTDTAWU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "512987191628-7308e3m9d595of8gg44mdhoabu6sn5tm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

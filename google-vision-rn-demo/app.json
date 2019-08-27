@@ -1,0 +1,26 @@
+{
+  "name": "AssistiveNote",
+  "expo": {
+    "name": "AssistiveNote",
+    "privacy": "public",
+    "description": "A note app for people who have trouble reading text.",
+    "slug": "assistivenote",
+    "sdkVersion": "33.0.0",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./screens/images/icon.png",
+    "ios": {
+      "bundleIdentifier": "com.danyalbabar.assistivenote"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "package": "com.danyalbabar.assistivenote",
+      "config": {
+        "googleSignIn": {
+          "certificateHash": "16:7B:C9:7B:89:DB:45:AB:E2:C0:76:47:4F:14:FF:1C:52:48:57:3B"
+        }
+      },
+      "permissions": []
+    }
+  }
+}
