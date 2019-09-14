@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Button, Dimensions } from 'react-native';
+import { View, TouchableOpacity, Dimensions } from 'react-native';
 import firebase from 'firebase';
 
-import * as GoogleSignIn from 'expo-google-sign-in';
-
+import {GoogleSignIn} from 'expo';
 
 import Image from 'react-native-scalable-image';
 
@@ -87,6 +86,7 @@ class LoginScreen extends Component {
     signInAsync = async () => {
         try {
             await GoogleSignIn.askForPlayServicesAsync();
+            
             const { type, user } = await GoogleSignIn.signInAsync();
             if (type === 'success') {
                 this.onSignIn(user);
