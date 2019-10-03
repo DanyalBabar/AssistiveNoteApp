@@ -42,7 +42,7 @@ class LoginScreen extends Component {
                 firebase
                     .auth()
                     .signInWithCredential(credential)
-                    .then(function (result) {
+                    .then((result) => {
                         if (result.additionalUserInfo.isNewUser) {
                             firebase
                                 .database()
@@ -53,17 +53,16 @@ class LoginScreen extends Component {
                                     created_at: Date.now()
                                 })
                             global.userId = result.user.uid;
+                            this.goHome();
                         }
-                        else {
-                            if (result.additionalUserInfo.isNewUser) {
-                                firebase
-                                    .database()
-                                    .ref('/users/' + result.user.uid).update({
-                                        last_logged_in: Date.now()
-                                    })
-                                global.userId = result.user.uid;
-
-                            }
+                        else if (!result.additionalUserInfo.isNewUser) {
+                            firebase
+                                .database()
+                                .ref('/users/' + result.user.uid).update({
+                                    last_logged_in: Date.now()
+                                })
+                            global.userId = result.user.uid;
+                            this.goHome();
                         }
                     })
                     .catch(function (error) {
@@ -79,6 +78,8 @@ class LoginScreen extends Component {
                     });
             } else {
                 console.log('User already signed-in Firebase.');
+                // send to home screen anyway, since they're already authed
+                this.goHome();
             }
         }.bind(this));
     }
@@ -104,6 +105,11 @@ class LoginScreen extends Component {
         } catch ({ message }) {
             alert('GoogleSignIn.initAsync(): ' + message);
         }
+    }
+
+    goHome = () => {
+      const {navigate} = this.props.navigation;
+      navigate('Home');
     }
 
     render() {
