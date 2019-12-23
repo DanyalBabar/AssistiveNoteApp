@@ -1,115 +1,60 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Dimensions } from 'react-native';
-import firebase from 'firebase';
+import { View, TouchableOpacity, Dimensions, Text, Alert } from 'react-native';
+import { Container, Item, Form, Input, Button, Label } from "native-base";
 
-import {GoogleSignIn} from 'expo';
+import * as firebase from "firebase";
 
 import Image from 'react-native-scalable-image';
 
 import getStarted from './images/login_getStartedButton.png';
-import signIn from './images/login_signinButton.png';
+import signIn from './images/login_SignInButton.png';
+import signUp from './images/login_SignUpButton.png';
 import why from './images/login_whyButton.png';
-import whyInfo from './images/login_whyInfoText.png';
+import forgot from './images/signIn_ForgotChangePassword.png'
 
 class LoginScreen extends Component {
 
-    isUserEqual = (googleUser, firebaseUser) => {
-        if (firebaseUser) {
-            var providerData = firebaseUser.providerData;
-            for (var i = 0; i < providerData.length; i++) {
-                if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-                    providerData[i].uid === googleUser.getBasicProfile().getId()) {
-                    // We don't need to reauth the Firebase connection.
-                    return true;
-                }
-            }
-        }
-        return false;
+    constructor(props) {
+        super(props);
+        this.state = {
+            email: "",
+            password: ""
+        };
     }
 
-    onSignIn = googleUser => {
-        var unsubscribe = firebase.auth().onAuthStateChanged(function (firebaseUser) {
-
-            unsubscribe();
-
-            if (!this.isUserEqual(googleUser, firebaseUser)) {
-                // Build Firebase credential with the Google ID token.
-                var credential = firebase.auth.GoogleAuthProvider.credential(
-                    googleUser.idToken,
-                    googleUser.accessToken
-                );
-
-                firebase
-                    .auth()
-                    .signInWithCredential(credential)
-                    .then((result) => {
-                        if (result.additionalUserInfo.isNewUser) {
-                            firebase
-                                .database()
-                                .ref('/users/' + result.user.uid)
-                                .set({
-                                    gmail: result.user.email,
-                                    first_name: result.additionalUserInfo.profile.given_name,
-                                    created_at: Date.now()
-                                })
-                            global.userId = result.user.uid;
-                            this.goHome();
-                        }
-                        else if (!result.additionalUserInfo.isNewUser) {
-                            firebase
-                                .database()
-                                .ref('/users/' + result.user.uid).update({
-                                    last_logged_in: Date.now()
-                                })
-                            global.userId = result.user.uid;
-                            this.goHome();
-                        }
-                    })
-                    .catch(function (error) {
-                        // Handle Errors here.
-                        var errorCode = error.code;
-                        var errorMessage = error.message;
-                        // The email of the user's account used.
-                        var email = error.email;
-                        // The firebase.auth.AuthCredential type that was used.
-                        var credential = error.credential;
-                        // ...
-                        console.log(errorCode, errorMessage, email, credential);
-                    });
-            } else {
-                console.log('User already signed-in Firebase.');
-                // send to home screen anyway, since they're already authed
-                this.goHome();
-            }
-        }.bind(this));
-    }
-
-    signInAsync = async () => {
+    signUp = (email, password) => {
         try {
-            await GoogleSignIn.askForPlayServicesAsync();
-            
-            const { type, user } = await GoogleSignIn.signInAsync();
-            if (type === 'success') {
-                this.onSignIn(user);
-                return user.accessToken;
-            }
-        } catch ({ message }) {
-            alert('login: Error:' + message);
+            firebase
+                .auth()
+                .createUserWithEmailAndPassword(email, password)
+                .then(user => {
+                    console.log(user);
+                }).catch(function (e) {
+                    alert(e);
+                })
+        } catch (error) {
+            console.log(error.toString());
         }
     };
 
-    componentDidMount() {
+    signIn = (email, password) => {
         try {
-            GoogleSignIn.initAsync({
-            });
-        } catch ({ message }) {
-            alert('GoogleSignIn.initAsync(): ' + message);
+            firebase
+                .auth()
+                .signInWithEmailAndPassword(email, password)
+                .then(res => {
+                    console.log(res.user.email);
+                }).catch(function (e) {
+                    alert(e);
+                })
+        } catch (error) {
+            console.log(error.toString());
         }
-    }
+    };
 
-    goHome = () => {
-      const {navigate} = this.props.navigation;
-      navigate('Home');
+    goForgot = () => {
+        const { navigate } = this.props.navigation;
+        navigate('Forgot');
     }
 
     render() {
@@ -118,10 +63,9 @@ class LoginScreen extends Component {
                 style={{
                     backgroundColor: '#e3e3e3',
                     flex: 1,
-                    justifyContent: 'space-around',
+                    justifyContent: 'space-evenly',
                     flexDirection: "column",
                     alignItems: 'center',
-
                 }}>
 
                 <Image
@@ -129,39 +73,118 @@ class LoginScreen extends Component {
                     resizeMode='contain'
                     source={getStarted}
                     style={{
-                        paddingVertical: 50
+                        paddingTop: Dimensions.get('window').height * 0.3,
+                        marginBottom: -Dimensions.get('window').height * 0.15
                     }}
                 />
 
+                {/* FORM */}
+                <View>
+                    <Form
+                        width={Dimensions.get('window').width * 0.9}
+                        style={{
+                            paddingTop: -Dimensions.get('window').height * 0.05,
+                            paddingBottom: Dimensions.get('window').height * 0.05
+                        }}>
+                        <Item floatingLabel
+                            style={{
+                            }}>
+                            <Label>Email</Label>
+                            <Input
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                onChangeText={email => this.setState({ email })}
+                            />
+                        </Item>
+                        <Item floatingLabel>
+                            <Label>Password</Label>
+                            <Input
+                                secureTextEntry={true}
+                                autoCapitalize="none"
+                                autoCorrect={false}
+                                onChangeText={password => this.setState({ password })}
+                            />
+                        </Item>
+                    </Form>
+                </View>
+
+                {/* SIGNIN & SIGNUP */}
+                <View
+                    style={{
+                        backgroundColor: '#e3e3e3',
+                        flexDirection: "row",
+                        marginTop: -Dimensions.get('window').height * 0.1,
+                        marginBottom: -Dimensions.get('window').height * 0.075
+                    }}>
+
+                    <TouchableOpacity
+                        onPress={() => this.signUp(this.state.email, this.state.password)}>
+
+                        <Image
+                            width={Dimensions.get('window').width * 0.3}
+                            resizeMode='contain'
+                            source={signUp}
+                            style={{
+                                marginHorizontal: Dimensions.get('window').width * 0.1
+                            }}
+                        />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => this.signIn(this.state.email, this.state.password)}>
+                        <Image
+                            width={Dimensions.get('window').width * 0.3}
+                            resizeMode='contain'
+                            source={signIn}
+                            style={{
+                                marginHorizontal: Dimensions.get('window').width * 0.1
+                            }}
+                        />
+                    </TouchableOpacity>
+                </View>
+
                 <TouchableOpacity
-                    onPress={() => this.signInAsync()}
-                >
+                    onPress={() => this.goForgot()}>
+
                     <Image
                         width={Dimensions.get('window').width * 0.8}
                         resizeMode='contain'
-                        source={signIn}
+                        source={forgot}
                         style={{
-                            paddingVertical: 50
                         }}
                     />
                 </TouchableOpacity>
 
-                <View>
+
+                {/* FORGOT & INFO  */}
+                <View
+                    style={{
+                        justifyContent: 'center',
+                        flexDirection: "column",
+                        alignItems: 'center',
+                    }}>
+
+
                     <Image
                         width={Dimensions.get('window').width * 0.8}
                         resizeMode='contain'
                         source={why}
                         style={{
+                            paddingBottom: Dimensions.get('window').height * 0.1
                         }}
                     />
-                    <Image
-                        width={Dimensions.get('window').width * 0.8}
-                        resizeMode='contain'
-                        source={whyInfo}
+                    <Text
                         style={{
-                            paddingTop: 125
-                        }}
-                    />
+                            color: '#323232',
+                            fontFamily: 'Roboto',
+                            fontWeight: "200",
+                            fontSize: 26,
+                            lineHeight: 35,
+                            textAlign: 'center',
+                            paddingHorizontal: Dimensions.get('window').width * 0.1,
+                        }}>
+                        {'email authentication helps sync your data across your devices'}
+                    </Text>
                 </View>
             </View>
         );

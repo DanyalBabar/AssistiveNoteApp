@@ -10,17 +10,24 @@
     "orientation": "portrait",
     "icon": "./screens/images/icon.png",
     "ios": {
-      "bundleIdentifier": "com.danyalbabar.assistivenote"
+      "bundleIdentifier": "come.danyalbabar.assistivenote",
+      "buildNumber": "1"
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-      "package": "com.danyalbabar.assistivenote",
+      "package": "come.danyalbabar.assistivenote",
       "config": {
         "googleSignIn": {
           "certificateHash": "DA:EF:9A:EF:C3:18:DF:6E:6A:33:54:26:3A:5F:44:17:EE:84:3C:4F"
         }
       },
-      "permissions": []
+      "permissions": [
+        "CAMERA",
+        "READ_INTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "versionCode": 2
     }
   }
 }

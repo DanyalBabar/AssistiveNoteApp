@@ -4,7 +4,8 @@ import {
 	TouchableOpacity,
 	ActivityIndicator,
 	Text,
-	View
+	View,
+	PermissionsAndroid
 } from 'react-native';
 
 import Image from 'react-native-scalable-image';
@@ -29,8 +30,27 @@ class NewNoteScreen extends Component {
 	};
 
 	async componentDidMount() {
-		await Permissions.askAsync(Permissions.CAMERA_ROLL);
-		await Permissions.askAsync(Permissions.CAMERA);
+		try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: 'Cool Photo App Camera Permission',
+        message:
+          'Cool Photo App needs access to your camera ' +
+          'so you can take awesome pictures.',
+        buttonNeutral: 'Ask Me Later',
+        buttonNegative: 'Cancel',
+        buttonPositive: 'OK',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      console.log('You can use the camera');
+    } else {
+      console.log('Camera permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
 	}
 
 	render() {
@@ -148,11 +168,20 @@ class NewNoteScreen extends Component {
 	}
 
 	_takePhoto = async () => {
-		let pickerResult = await ImagePicker.launchCameraAsync({
-			allowsEditing: true,
-		});
 
-		this._handleImagePicked(pickerResult);
+		const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+
+		if (status === 'granted') {
+			let pickerResult = await ImagePicker.launchCameraAsync({
+				allowsEditing: true,
+			});
+
+			this._handleImagePicked(pickerResult);
+		}
+
+		else {
+			console.log("HMM");
+		}
 	};
 
 	_pickImage = async () => {
